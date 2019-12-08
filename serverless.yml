@@ -1,0 +1,68 @@
+service:
+  name: messenger
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource:
+        - "Fn::GetAtt": [ Messages, Arn ]
+    - Effect: Deny
+      Action:
+        - sns:Publish
+      Resource: "arn:aws:sns:*:*:*"
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resuorce: "*"
+resources:
+  - ${file(resources/dynamodb-table.yml)}
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
+  
+  send_message:
+    handler: messenger.send_message
+    events:
+      - http:
+          method: post
+          path: send_message
+
+  get_all_messages:
+    handler: messenger.get_all_messages
+    events:
+      - http:
+          method: get
+          path: get_all_messages
