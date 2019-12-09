@@ -24,7 +24,7 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
     if (userID != null && userID.trim() != "") {
       if (message != null && message.trim() != "") {
         if (phoneNumber != null && phoneNumber.trim() != "") {
-          sns.publish({
+          return sns.publish({
             Message: message,
             MessageAttributes: {
               'AWS.SNS.SMS.SMSType': {
@@ -50,7 +50,7 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
                   sentTime: new Date().getTime()
                 }
               }
-              docClient.put(params).promise()
+              return docClient.put(params).promise()
                 .then((data) => {
                   console.log("Successfully saved copy of message in DB")
                   return {
@@ -165,7 +165,7 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
 
     // Here I have used async.whilst function to chain async function calls in while loop format
     // https://caolan.github.io/async/v3/docs.html#whilst
-    whilst(
+    return whilst(
       function () {
         return shouldMakeQuery
       },
