@@ -9,3 +9,8 @@ Module in Typescript for sending SMS with SNS API and saving it in DynamoDB.
 
 ### How to deploy
 This module can be deployed using AWS platform specific instructions given by [serverless](https://serverless.com/framework/docs/providers/aws/guide/deploying/) and after [setting up credentials](https://serverless.com/framework/docs/providers/aws/guide/credentials/).
+
+### Ideas for improvement and things to keep in mind as the module grows:
+1. Using stage variables in resources like table name such that different resources created for different environment during dev, test and production stages possibly for each developer.
+2. Using authentication mechanism to restrict API access to only authorized clients by including some security access token while performing each request and verifying the validity and access permissions associated with that token, to check if the client is authorized to perform the requested actions.
+3. Keeping the permissions related to performing different actions on AWS resources as specified in iamRoleStatements in serverless.yml to be as minimal as possible just enough so that the module is able to perform its intended tasks.
