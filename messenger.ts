@@ -1,10 +1,10 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 const whilst = require("async/whilst");
-let AWS = require("aws-sdk")
+import * as AWS from "aws-sdk"
 const sns = new AWS.SNS()
 const docClient = new AWS.DynamoDB.DocumentClient()
- 
+
 // This method handles sending given message to given userID and phone number via SMS using AWS SNS API
 // It also saves the copy of message, receipiant userID, phone number and timestamp in DynamoDB.
 // Attributes expected in body of HTTP POST request:
@@ -42,10 +42,10 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
             },
             PhoneNumber: phoneNumber
           }).promise()
-            .then((data) => {
+            .then((data: AWS.SNS.Types.PublishResponse) => {
               console.log("Successfully sent SMS")
               // Keep record in database
-              var params = {
+              var params : AWS.DynamoDB.DocumentClient.PutItemInput = {
                 TableName: process.env.messagesTableName,
                 Item: {
                   userID,
@@ -55,7 +55,7 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
                 }
               }
               return docClient.put(params).promise()
-                .then((data) => {
+                .then((data: AWS.DynamoDB.DocumentClient.PutItemOutput) => {
                   console.log("Successfully saved copy of message in DB")
                   return {
                     statusCode: 200,
@@ -67,8 +67,8 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
                     })
                   }
                 })
-                .catch((error: any) => {
-                  console.error("Saving copy of message in DB failed")
+                .catch((error: AWS.AWSError) => {
+                  console.error("Saving copy of message in DB failed " + error.code + " " + error.message)
                   return {
                     statusCode: 500,
                     body: JSON.stringify({
@@ -83,8 +83,8 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
                   }
                 })
             })
-            .catch(err => {
-              console.error("Sending SMS failed", err);
+            .catch((err: AWS.AWSError) => {
+              console.error("Sending SMS failed " + err.message);
               return {
                 statusCode: 500,
                 body: JSON.stringify({
@@ -155,7 +155,7 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
 
   var userID = event.queryStringParameters.user_id
   if (userID != null && userID.trim() != "") {
-    var params = {
+    var params : AWS.DynamoDB.DocumentClient.QueryInput = {
       TableName: process.env.messagesTableName,
       KeyConditionExpression: "userID = :userID",
       ExpressionAttributeValues: {
@@ -180,7 +180,7 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
           params["ExclusiveStartKey"] = LastEvaluatedKey
         }
         return docClient.query(params).promise()
-          .then((data) => {
+          .then((data: AWS.DynamoDB.DocumentClient.QueryOutput) => {
             if (data.Items != null) {
               data.Items.forEach(message => {
                 messages.push(message)
@@ -191,8 +191,8 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
               shouldMakeQuery = false
             }
           })
-          .catch((error) => {
-            console.error("When requested to get all the messages sent to user, received error " + error.toString())
+          .catch((error: AWS.AWSError) => {
+            console.error("When requested to get all the messages sent to user, received error: " + error.message )
             encounteredError = true
             shouldMakeQuery = false
           })
