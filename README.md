@@ -8,7 +8,7 @@ Module in Typescript for sending SMS with SNS API and saving it in DynamoDB.
 [resources/dynamodb-table.yml](https://github.com/patelatharva/messenger/blob/master/resources/dynamodb-table.yml) contains description of table to be created for storing messages sent.
 
 ### How to deploy
-This module can be deployed using AWS platform specific instructions given by [serverless](https://serverless.com/framework/docs/providers/aws/guide/deploying/) and after [setting up credentials](https://serverless.com/framework/docs/providers/aws/guide/credentials/).
+This module can be deployed using AWS platform specific instructions given by [serverless](https://serverless.com/framework/docs/providers/aws/guide/deploying/) after [setting up credentials](https://serverless.com/framework/docs/providers/aws/guide/credentials/).
 
 ### Ideas for improvement and things to keep in mind as the module grows:
 1. Using authentication mechanism to restrict API access to only authorized clients by including some security access token while performing each request and verifying the validity and access permissions associated with that token, to check if the client is authorized to perform the requested actions.
