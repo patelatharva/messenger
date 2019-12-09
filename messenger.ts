@@ -173,7 +173,7 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
         if (LastEvaluatedKey != null) {
           params["ExclusiveStartKey"] = LastEvaluatedKey
         }
-        docClient.query(params).promise()
+        return docClient.query(params).promise()
           .then((data) => {
             if (data.Items != null) {
               data.Items.forEach(message => {
