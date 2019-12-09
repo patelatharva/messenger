@@ -197,6 +197,9 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
           const errorCode = 2
           return {
             statusCode: 500,
+            headers: {
+              "Content-Type": "application/json"                        
+            },
             body: JSON.stringify({
               error: {
                 error: {
@@ -209,6 +212,9 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
         } else {
           return {
             statusCode: 200,
+            headers: {
+              "Content-Type": "application/json"                        
+            },
             body: JSON.stringify({
               data: {
                 messages
@@ -220,6 +226,9 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
   } else {
     return {
       statusCode: 400,
+      headers: {
+        "Content-Type": "application/json"                        
+      },
       body: JSON.stringify({
         error: {
           code: 1,
