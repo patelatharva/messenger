@@ -7,6 +7,10 @@ const docClient = new AWS.DynamoDB.DocumentClient()
  
 // This method handles sending given message to given userID and phone number via SMS using AWS SNS API
 // It also saves the copy of message, receipiant userID, phone number and timestamp in DynamoDB.
+// Attributes expected in body of HTTP POST request:
+// user_id
+// message
+// phone_number
 export const send_message: APIGatewayProxyHandler = async (event, _context) => {
   const errorCodes = {
     0: "internal error",
@@ -140,6 +144,8 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
 }
 
 // This method handles returning all the messages sent to given userID in descending order by time they were sent
+// Attributes expected in query string of HTTP GET request:
+// user_id
 export const get_all_messages: APIGatewayProxyHandler = async (event, _context) => {
   const errorCodes: Object = {
     0: "internal error",
