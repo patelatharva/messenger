@@ -46,7 +46,7 @@ export const send_message: APIGatewayProxyHandler = async (event, _context) => {
               console.log("Successfully sent SMS")
               // Keep record in database
               var params = {
-                TableName: "Messages",
+                TableName: process.env.messagesTableName,
                 Item: {
                   userID,
                   message,
@@ -156,7 +156,7 @@ export const get_all_messages: APIGatewayProxyHandler = async (event, _context) 
   var userID = event.queryStringParameters.user_id
   if (userID != null && userID.trim() != "") {
     var params = {
-      TableName: "Messages",
+      TableName: process.env.messagesTableName,
       KeyConditionExpression: "userID = :userID",
       ExpressionAttributeValues: {
         ":userID": userID
